@@ -46,6 +46,14 @@ export default function App() {
   // --- Modal State ---
   const [selectedCourse, setSelectedCourse] = useState(null);
 
+  // --- Show More Pagination State ---
+  const [visibleCount, setVisibleCount] = useState(6);
+
+  // Reset pagination when search queries, categories, sorting, or favorites toggle changes
+  useEffect(() => {
+    setVisibleCount(6);
+  }, [search, category, sortBy, favoritesOnly]);
+
   // --- State Handlers ---
   const handleUpdateProgress = (courseId, newProgress) => {
     setCoursesState((prevCourses) => {
@@ -110,6 +118,10 @@ export default function App() {
     return result;
   }, [coursesState, search, category, favoritesOnly, sortBy]);
 
+  const visibleCourses = useMemo(() => {
+    return filteredCourses.slice(0, visibleCount);
+  }, [filteredCourses, visibleCount]);
+
   return (
     <div className="min-h-screen bg-paper text-ink transition-colors duration-300 dark:bg-slate-950">
       <Navbar isDarkMode={isDarkMode} onToggleDarkMode={() => setIsDarkMode(!isDarkMode)} />
@@ -150,11 +162,23 @@ export default function App() {
 
         {/* Course Grid */}
         <CourseGrid 
-          courses={filteredCourses} 
+          courses={visibleCourses} 
           onUpdateProgress={handleUpdateProgress}
           onToggleFavorite={handleToggleFavorite}
           onSelectCourse={setSelectedCourse}
         />
+
+        {/* Show More Button */}
+        {filteredCourses.length > visibleCount && (
+          <div className="flex justify-center mt-10">
+            <button
+              onClick={() => setVisibleCount((prev) => prev + 6)}
+              className="px-6 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-sm font-semibold text-ink dark:text-slate-200 transition-all hover:shadow-sm cursor-pointer hover:-translate-y-0.5 duration-200"
+            >
+              Show More Courses
+            </button>
+          </div>
+        )}
       </section>
 
       <Footer />
