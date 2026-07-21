@@ -6,9 +6,10 @@ import ContinueLearning from "./components/ContinueLearning";
 import SearchBar from "./components/SearchBar";
 import CategoryFilter from "./components/CategoryFilter";
 import CourseGrid from "./components/CourseGrid";
-import CourseModal from "./components/CourseModal";
+import CourseDetailsModal from "./components/CourseDetailsModal";
 import Footer from "./components/Footer";
 import { courses as initialCourses } from "./data/courses";
+import { initialNotifications } from "./data/notifications";
 
 export default function App() {
   // --- Dark Mode State ---
@@ -36,6 +37,28 @@ export default function App() {
     const saved = localStorage.getItem("learnsphere_courses");
     return saved ? JSON.parse(saved) : initialCourses;
   });
+
+  // --- Notifications State ---
+  const [notifications, setNotifications] = useState(() => {
+    const saved = localStorage.getItem("learnsphere_notifications");
+    return saved ? JSON.parse(saved) : initialNotifications;
+  });
+
+  const handleMarkAsRead = (id) => {
+    setNotifications((prev) => {
+      const updated = prev.map((n) => (n.id === id ? { ...n, read: true } : n));
+      localStorage.setItem("learnsphere_notifications", JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const handleMarkAllAsRead = () => {
+    setNotifications((prev) => {
+      const updated = prev.map((n) => ({ ...n, read: true }));
+      localStorage.setItem("learnsphere_notifications", JSON.stringify(updated));
+      return updated;
+    });
+  };
 
   // --- Search, Filter, Sort States ---
   const [search, setSearch] = useState("");
@@ -124,10 +147,16 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-paper text-ink transition-colors duration-300 dark:bg-slate-950">
-      <Navbar isDarkMode={isDarkMode} onToggleDarkMode={() => setIsDarkMode(!isDarkMode)} />
+      <Navbar
+        isDarkMode={isDarkMode}
+        onToggleDarkMode={() => setIsDarkMode(!isDarkMode)}
+        notifications={notifications}
+        onMarkAsRead={handleMarkAsRead}
+        onMarkAllAsRead={handleMarkAllAsRead}
+      />
       <HeroSection />
       
-      {/* Dynamics Stats from Live State */}
+      {/* Dynamic Stats from Live State */}
       <StatsSection courses={coursesState} />
       
       {/* Continue Learning */}
@@ -140,7 +169,7 @@ export default function App() {
 
       {/* Main Course Explorer Section */}
       <section id="courses" className="max-w-7xl mx-auto px-5 sm:px-8 pb-20">
-        <h2 className="font-display text-xl sm:text-2xl font-semibold text-ink mb-5">Explore Courses</h2>
+        <h2 className="font-display text-xl sm:text-2xl font-semibold text-ink dark:text-white mb-5">Explore Courses</h2>
 
         {/* Controls: Search, Favorites, Sorting, Categories */}
         <div className="space-y-4 mb-6">
@@ -173,7 +202,7 @@ export default function App() {
           <div className="flex justify-center mt-10">
             <button
               onClick={() => setVisibleCount((prev) => prev + 6)}
-              className="px-6 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-sm font-semibold text-ink dark:text-slate-200 transition-all hover:shadow-sm cursor-pointer hover:-translate-y-0.5 duration-200"
+              className="px-6 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-sm font-semibold text-ink dark:text-slate-200 transition-all hover:shadow-sm cursor-pointer hover:-translate-y-0.5 duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
             >
               Show More Courses
             </button>
@@ -183,12 +212,11 @@ export default function App() {
 
       <Footer />
 
-      {/* Interactive Detail Modal */}
-      <CourseModal
+      {/* Course Details Modal */}
+      <CourseDetailsModal
         course={selectedCourse}
         isOpen={!!selectedCourse}
         onClose={() => setSelectedCourse(null)}
-        onUpdateProgress={handleUpdateProgress}
       />
     </div>
   );

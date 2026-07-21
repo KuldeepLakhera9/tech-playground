@@ -25,11 +25,12 @@ export default function CourseCard({ course, onToggleFavorite, onSelectCourse })
 
         {/* Favorite Icon Toggle */}
         <button
+          type="button"
           onClick={(e) => {
             e.stopPropagation(); // prevent opening the modal
             onToggleFavorite(id);
           }}
-          className="absolute top-3 right-3 h-8 w-8 rounded-lg bg-white/95 dark:bg-slate-900/90 text-slate-400 hover:text-rose-500 dark:hover:text-rose-400 flex items-center justify-center shadow-sm border border-slate-100/50 dark:border-slate-800 transition-colors z-10 cursor-pointer"
+          className="absolute top-3 right-3 h-8 w-8 rounded-lg bg-white/95 dark:bg-slate-900/90 text-slate-400 hover:text-rose-500 dark:hover:text-rose-400 active:scale-95 flex items-center justify-center shadow-sm border border-slate-100/50 dark:border-slate-800 transition-all z-10 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
           aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
         >
           {isFavorite ? (
@@ -55,7 +56,7 @@ export default function CourseCard({ course, onToggleFavorite, onSelectCourse })
 
         {/* Status and percentage */}
         <div className="mt-5 flex items-center justify-between text-xs font-semibold">
-          <span className={`px-2.5 py-1 rounded-full font-medium ${statusStyles[status]}`}>
+          <span className={`px-2.5 py-1 rounded-full font-medium ${statusStyles[status] || ""}`}>
             {status}
           </span>
           <span className="text-ink dark:text-slate-300 font-mono text-sm">{progress}%</span>
@@ -69,15 +70,16 @@ export default function CourseCard({ course, onToggleFavorite, onSelectCourse })
           />
         </div>
 
-        {/* Interactive Action Button */}
+        {/* View Details Button */}
         <button 
+          type="button"
           onClick={(e) => {
             e.stopPropagation(); // prevent modal opening twice
             onSelectCourse(course);
           }}
-          className="mt-4 w-full py-2.5 rounded-xl bg-slate-50 hover:bg-primary-500 dark:bg-slate-800/80 dark:hover:bg-primary-500 text-ink dark:text-slate-200 dark:hover:text-white font-semibold text-sm hover:shadow-sm transition-all duration-200 cursor-pointer"
+          className="mt-4 w-full py-2.5 rounded-xl bg-slate-50 hover:bg-primary-500 dark:bg-slate-800/80 dark:hover:bg-primary-500 text-ink dark:text-slate-200 dark:hover:text-white font-semibold text-sm hover:shadow-sm active:scale-[0.99] transition-all duration-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
         >
-          {status === "Completed" ? "Review Course" : status === "Not Started" ? "Start Course" : "Continue Learning"}
+          View Details
         </button>
       </div>
     </div>
